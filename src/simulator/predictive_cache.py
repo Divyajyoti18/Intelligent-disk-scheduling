@@ -10,21 +10,29 @@ class PredictiveCache:
         self.capacity = capacity
         self.history_size = history_size
         self.cache = OrderedDict()
+        self.prefetched = set()
         self.history = []
         self.transitions = {}
         self.hits = 0
         self.misses = 0
         self.prefetches = 0
+        self.useful_prefetches = 0
+        self.evictions = 0
 
-    def _insert(self, position):
+    def _insert(self, position, is_prefetch=False):
         if position in self.cache:
             self.cache.move_to_end(position)
             return
 
         if len(self.cache) >= self.capacity:
-            self.cache.popitem(last=False)
+            removed, _ = self.cache.popitem(last=False)
+            self.prefetched.discard(removed)
+            self.evictions += 1
 
         self.cache[position] = True
+
+        if is_prefetch:
+            self.prefetched.add(position)
 
     def _predict_next(self, current):
         next_positions = self.transitions.get(current)
@@ -37,8 +45,13 @@ class PredictiveCache:
     def access(self, position):
         hit = position in self.cache
 
-        if hit:
+        if position in self.cache:
             self.hits += 1
+
+            if position in self.prefetched:
+                self.useful_prefetches += 1
+                self.prefetched.remove(position)
+
             self.cache.move_to_end(position)
         else:
             self.misses += 1
@@ -57,7 +70,7 @@ class PredictiveCache:
         predicted = self._predict_next(position)
 
         if predicted is not None and predicted not in self.cache:
-            self._insert(predicted)
+            self._insert(predicted, is_prefetch=True)
             self.prefetches += 1
 
         return hit
@@ -68,6 +81,8 @@ class PredictiveCache:
         return {
             "hits": self.hits,
             "misses": self.misses,
+            "evictions": self.evictions,
             "prefetches": self.prefetches,
+            "useful_prefetches": self.useful_prefetches,
             "hit_rate": self.hits / total if total else 0
         }
