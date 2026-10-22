@@ -1,9 +1,9 @@
 workload,cache,hits,misses,hit_rate,prefetches,useful_prefetches,evictions
 Random,LRU,2,98,0.02,0,0,88
-Random,Predictive,2,98,0.02,16,0,104
+Random,Predictive,2,98,0.02,0,0,88
 Sequential,LRU,0,100,0.0,0,0,90
-Sequential,Predictive,0,100,0.0,0,0,90
+Sequential,Predictive,97,3,0.97,98,97,91
 Localized,LRU,26,74,0.26,0,0,64
-Localized,Predictive,26,74,0.26,38,7,102
+Localized,Predictive,25,75,0.25,2,1,67
 Bursty,LRU,13,87,0.13,0,0,77
-Bursty,Predictive,12,88,0.12,28,1,106
+Bursty,Predictive,13,87,0.13,0,0,77

@@ -31,7 +31,9 @@ FIGURES_DIR.mkdir(parents=True, exist_ok=True)
 
 workloads = {
     "Random": lambda: random_workload(REQUEST_COUNT, DISK_SIZE),
-    "Sequential": lambda: sequential_workload(REQUEST_COUNT),
+    "Sequential": lambda: sequential_workload(
+        REQUEST_COUNT, disk_size=DISK_SIZE
+    ),
     "Localized": lambda: localized_workload(
         REQUEST_COUNT, disk_size=DISK_SIZE
     ),

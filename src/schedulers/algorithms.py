@@ -124,6 +124,9 @@ def scan(requests, initial_head, disk_size=200, direction="right"):
         "left"  = move toward lower cylinder numbers first.
     """
 
+    if not requests:
+        return [], 0
+
     # Separate requests on either side of the current head.
     left = sorted(
         [position for position in requests if position < initial_head]
@@ -190,6 +193,9 @@ def cscan(requests, initial_head, disk_size=200):
     The return from the right boundary to zero is counted
     in our total movement.
     """
+
+    if not requests:
+        return [], 0
 
     # Requests at or to the right of the current head.
     right = sorted(
